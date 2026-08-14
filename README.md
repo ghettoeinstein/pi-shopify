@@ -1,13 +1,13 @@
-# Loft Interactive
+# Phillipa Imani — New York Loft
 
-An isometric 3D shoppable-room Shopify theme — drag to look around a warm, low-poly loft, click a piece of furniture, shop it. Built as an original implementation inspired by the *genre* of interactive-room commerce experiences (e.g. Plain Jane Interactive) — no code or assets from any existing product were copied; this is a from-scratch scaffold in this repo's own style.
+A shader-rendered, shoppable fashion loft for Phillipa Imani. The homepage is the showroom: drag to orbit the garment rack, tap a garment to focus it, and hold to enter its native Shopify product page. Mobile uses swipe, tap-to-focus, and tap-again-to-enter.
 
 ## How it works
 
-- **No build step.** `layout/theme.liquid` and the sections are plain Shopify Liquid. `assets/loft-scene.js` is a native ES module that imports Three.js and GSAP straight from a pinned CDN URL (unpkg / jsDelivr) at runtime — nothing to compile. Swap to a bundled/vendored copy later if you want zero third-party runtime requests (see "Hardening" below).
+- **No build step or third-party runtime.** The stone floor and loft lighting are rendered by a compact native WebGL fragment shader in `assets/loft-scene.js`; rack depth uses GPU-composited CSS transforms.
 - **Progressive enhancement, not a gate.** `sections/loft-interactive.liquid` always server-renders a real, accessible product grid (`.loft__fallback-grid`) from actual Liquid product data. `loft-scene.js` only hides that grid and mounts the WebGL canvas if the device has WebGL *and* the viewport is ≥700px. Small phones and no-JS/no-WebGL visitors always get a working, real product grid — nobody is blocked from buying because a 3D scene didn't load.
-- **Merchant-configurable hotspots.** Each "Hotspot" block in the section schema is a real product picker plus a `spot` (sofa / shelf / table / rack / plant) — no code changes needed to swap which product sits where. Hotspot data (title, price, image, variant ID, availability) is emitted as a `<script type="application/json">` tag from Liquid, so the JS never has to guess — it's real store data.
-- **Real checkout, not a mockup.** Clicking a hotspot opens a panel wired to Shopify's `/cart/add.js` AJAX Cart API. Adding to cart is a real cart mutation.
+- **Real catalog data.** Liquid reads the selected collection, filters generated `asset-pack` placeholders, and places up to six real products on the virtual rack.
+- **Native commerce handoff.** A 650ms hold opens the normal Shopify product page; a persistent “View as grid” route keeps conventional shopping one click away.
 
 ## Local development
 

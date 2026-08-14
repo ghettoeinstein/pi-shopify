@@ -4,7 +4,7 @@
     {% for product in collection.products %}
       <a href="{{ product.url }}" style="color:inherit;text-decoration:none;">
         {% if product.featured_image %}
-          <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.featured_image.alt | escape }}" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;">
+          <img src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.featured_image.alt | escape }}" width="400" height="500" loading="lazy" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;">
         {% endif %}
         <p>{{ product.title }}</p>
         <p style="color:#ff8a5b;">{{ product.price | money }}</p>

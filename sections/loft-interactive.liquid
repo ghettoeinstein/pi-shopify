@@ -1,128 +1,48 @@
-<section
-  class="loft"
-  id="Loft-{{ section.id }}"
-  data-loft
-  data-section-id="{{ section.id }}"
->
-  <div class="loft__intro">
-    {% if section.settings.eyebrow != blank %}
-      <p class="loft__eyebrow">{{ section.settings.eyebrow }}</p>
-    {% endif %}
-    {% if section.settings.heading != blank %}
-      <h2 class="loft__heading">{{ section.settings.heading }}</h2>
-    {% endif %}
+{% liquid
+  assign loft_collection = collections[section.settings.collection]
+  if loft_collection == blank
+    assign loft_collection = collections.all
+  endif
+%}
+<section id="PILoft-{{ section.id }}" class="pi-loft" data-pi-loft>
+  <canvas class="pi-loft__shader" data-pi-shader aria-hidden="true"></canvas>
+  <div class="pi-loft__chrome" aria-hidden="true"><span>PRIVATE SHOWROOM / 01</span><span>DRAG TO MOVE</span></div>
+  <header class="pi-loft__identity"><p>{{ section.settings.eyebrow }}</p><h1>THE<br><em>LOFT</em></h1></header>
+  <div class="pi-loft__rack" data-pi-rack aria-label="Interactive product rack">
+    {% assign shown = 0 %}
+    {% for product in loft_collection.products %}
+      {% unless product.handle contains 'asset-pack' %}
+        {% assign shown = shown | plus: 1 %}
+        <a class="pi-garment" href="{{ product.url }}" data-pi-garment data-title="{{ product.title | escape }}" data-price="{{ product.price | money | escape }}">
+          <span class="pi-garment__hanger" aria-hidden="true"></span>
+          {% if product.featured_image %}
+            {{ product.featured_image | image_url: width: 1000 | image_tag: class: 'pi-garment__image', loading: 'eager', widths: '360, 540, 720, 1000', alt: product.title }}
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'pi-garment__image' }}
+          {% endif %}
+          <span class="pi-garment__caption"><b>0{{ shown }}</b><strong>{{ product.title }}</strong><small>{{ product.price | money }}</small></span>
+        </a>
+        {% if shown == section.settings.product_limit %}{% break %}{% endif %}
+      {% endunless %}
+    {% endfor %}
   </div>
-
-  {% comment %} 3D mount point — JS replaces/hides the fallback grid below when WebGL + viewport allow it. {% endcomment %}
-  <div class="loft__stage" data-loft-stage aria-hidden="true">
-    <canvas data-loft-canvas></canvas>
-    <div class="loft__panel" data-loft-panel hidden>
-      <button type="button" class="loft__panel-close" data-loft-panel-close aria-label="Close">&times;</button>
-      <div class="loft__panel-body" data-loft-panel-body></div>
-    </div>
-    <p class="loft__hint">Drag to look around &middot; click a piece to shop it</p>
-  </div>
-
-  {% comment %} Accessible fallback — always rendered, real Liquid product data, works with JS off. {% endcomment %}
-  <div class="loft__fallback" data-loft-fallback>
-    <div class="loft__fallback-grid">
-      {% for block in section.blocks %}
-        {% assign product = block.settings.product %}
-        {% if product != blank %}
-          <a class="loft__fallback-card" href="{{ product.url }}" {{ block.shopify_attributes }}>
-            {% if product.featured_image %}
-              <img
-                src="{{ product.featured_image | image_url: width: 480 }}"
-                alt="{{ product.featured_image.alt | escape }}"
-                loading="lazy"
-                width="480"
-                height="{{ 480 | divided_by: product.featured_image.aspect_ratio }}"
-              >
-            {% endif %}
-            <span class="loft__fallback-title">{{ block.settings.label | default: product.title }}</span>
-            <span class="loft__fallback-price">{{ product.price | money }}</span>
-          </a>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-
-  {% comment %} Hotspot data for loft-scene.js — public product fields only. {% endcomment %}
-  {{ 'loft-scene.css' | asset_url | stylesheet_tag }}
-  <script type="application/json" data-loft-hotspots>
-    [
-      {% for block in section.blocks %}
-        {% assign product = block.settings.product %}
-        {% if product != blank %}
-          {
-            "id": {{ block.id | json }},
-            "spot": {{ block.settings.spot | json }},
-            "label": {{ block.settings.label | default: product.title | json }},
-            "title": {{ product.title | json }},
-            "price": {{ product.price | money | json }},
-            "image": {{ product.featured_image | image_url: width: 800 | json }},
-            "url": {{ product.url | json }},
-            "variantId": {{ product.selected_or_first_available_variant.id | json }},
-            "available": {{ product.available | json }}
-          }{% unless forloop.last %},{% endunless %}
-        {% endif %}
-      {% endfor %}
-    ]
-  </script>
-
-  <script type="module" src="{{ 'loft-scene.js' | asset_url }}" defer></script>
+  <aside class="pi-loft__focus" data-pi-focus aria-live="polite">
+    <span data-pi-count>01 / 04</span><h2 data-pi-title>SELECT A GARMENT</h2><p data-pi-price></p><b>HOLD TO ENTER</b><i data-pi-progress></i>
+  </aside>
+  <div class="pi-loft__instructions"><span class="pi-loft__desktop-help">DRAG THE ROOM · TAP TO FOCUS · HOLD TO ENTER</span><span class="pi-loft__mobile-help">SWIPE THE RACK · TAP TO FOCUS · TAP AGAIN TO ENTER</span></div>
+  <a class="pi-loft__grid-link" href="{{ loft_collection.url | default: routes.all_products_collection_url }}">VIEW AS GRID ↗</a>
+  <noscript><p class="pi-loft__noscript"><a href="{{ loft_collection.url }}">Shop the collection.</a></p></noscript>
 </section>
-
+{{ 'loft-scene.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'loft-scene.js' | asset_url }}" defer></script>
 {% schema %}
 {
-  "name": "Loft Interactive",
+  "name": "PI New York Loft",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "INTERACTIVE" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Step into the loft." },
-    {
-      "type": "select",
-      "id": "quality",
-      "label": "Rendering quality",
-      "options": [
-        { "value": "auto", "label": "Auto (recommended)" },
-        { "value": "high", "label": "Always high" },
-        { "value": "low", "label": "Always low-power" }
-      ],
-      "default": "auto"
-    }
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "MADE IN SOUTH CENTRAL / LOS ANGELES" },
+    { "type": "range", "id": "product_limit", "label": "Garments on rack", "min": 2, "max": 6, "step": 1, "default": 4 }
   ],
-  "blocks": [
-    {
-      "type": "hotspot",
-      "name": "Hotspot",
-      "settings": [
-        { "type": "product", "id": "product", "label": "Product" },
-        {
-          "type": "select",
-          "id": "spot",
-          "label": "Placement in the room",
-          "options": [
-            { "value": "sofa", "label": "Sofa" },
-            { "value": "shelf", "label": "Shelf" },
-            { "value": "table", "label": "Table" },
-            { "value": "rack", "label": "Clothing rack" },
-            { "value": "plant", "label": "Plant corner" }
-          ],
-          "default": "sofa"
-        },
-        { "type": "text", "id": "label", "label": "Label override (optional)" }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Loft Interactive",
-      "blocks": [
-        { "type": "hotspot", "settings": { "spot": "sofa" } },
-        { "type": "hotspot", "settings": { "spot": "shelf" } },
-        { "type": "hotspot", "settings": { "spot": "rack" } }
-      ]
-    }
-  ]
+  "presets": [{ "name": "PI New York Loft" }]
 }
 {% endschema %}
