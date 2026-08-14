@@ -1,0 +1,8 @@
+<div style="max-width:1200px;margin:0 auto;padding:40px 24px;">
+  <h1>Collections</h1>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-top:24px;">
+    {% for collection in collections %}
+      <a href="{{ collection.url }}" style="color:inherit;text-decoration:none;">{{ collection.title }}</a>
+    {% endfor %}
+  </div>
+</div>

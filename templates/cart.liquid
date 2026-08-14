@@ -1,0 +1,24 @@
+<div style="max-width:800px;margin:0 auto;padding:40px 24px;">
+  <h1>Your cart</h1>
+  {% if cart.item_count == 0 %}
+    <p>Your cart is empty.</p>
+  {% else %}
+    {% form 'cart' %}
+      {% for item in cart.items %}
+        <div style="display:flex;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+          {% if item.image %}
+            <img src="{{ item.image | image_url: width: 100 }}" alt="{{ item.title | escape }}" style="width:64px;height:64px;object-fit:cover;border-radius:4px;">
+          {% endif %}
+          <div style="flex:1;">
+            <p>{{ item.product.title }}</p>
+            <p style="color:#8a8078;">{{ item.variant.title }}</p>
+          </div>
+          <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" style="width:60px;">
+          <p>{{ item.final_line_price | money }}</p>
+        </div>
+      {% endfor %}
+      <p style="text-align:right;font-weight:600;margin-top:16px;">Total: {{ cart.total_price | money }}</p>
+      <button type="submit" name="checkout">Checkout</button>
+    {% endform %}
+  {% endif %}
+</div>

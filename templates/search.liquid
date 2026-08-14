@@ -1,0 +1,14 @@
+<div style="max-width:1200px;margin:0 auto;padding:40px 24px;">
+  <h1>Search</h1>
+  {% form 'search' %}
+    <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="Search">
+    <button type="submit">Search</button>
+  {% endform %}
+  {% if search.performed %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-top:24px;">
+      {% for item in search.results %}
+        <a href="{{ item.url }}" style="color:inherit;text-decoration:none;">{{ item.title }}</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

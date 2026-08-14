@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "loft": {
+      "type": "loft-interactive",
+      "settings": {
+        "eyebrow": "INTERACTIVE",
+        "heading": "Step into the loft."
+      },
+      "blocks": {
+        "hotspot-1": { "type": "hotspot", "settings": { "spot": "sofa" } },
+        "hotspot-2": { "type": "hotspot", "settings": { "spot": "shelf" } },
+        "hotspot-3": { "type": "hotspot", "settings": { "spot": "rack" } }
+      },
+      "block_order": ["hotspot-1", "hotspot-2", "hotspot-3"]
+    }
+  },
+  "order": ["loft"]
+}

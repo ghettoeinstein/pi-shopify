@@ -1,0 +1,11 @@
+{
+  "name": "loft-interactive-theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Isometric 3D interactive Shopify theme — virtual loft showroom with shoppable 3D hotspots.",
+  "scripts": {
+    "dev": "shopify theme dev",
+    "check": "shopify theme check",
+    "push": "shopify theme push"
+  }
+}

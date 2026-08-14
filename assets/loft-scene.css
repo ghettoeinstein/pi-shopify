@@ -1,0 +1,200 @@
+.loft {
+  padding: clamp(48px, 8vw, 100px) 0;
+  background: #0f0906;
+  color: #f5ede4;
+}
+
+.loft__intro {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  padding: 0 24px;
+}
+
+.loft__eyebrow {
+  margin: 0 0 8px;
+  font: 600 0.7rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ff8a5b;
+}
+
+.loft__heading {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.loft__stage {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 4px;
+  background: radial-gradient(circle at 30% 30%, #3a1c12, #0f0906 70%);
+}
+
+.loft__stage[aria-hidden="true"] {
+  display: none;
+}
+
+.loft__stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.loft__stage canvas:active {
+  cursor: grabbing;
+}
+
+.loft__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 12px;
+  color: #f5ede4;
+  background: rgba(0, 0, 0, 0.35);
+  font: 500 0.7rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.loft__marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.loft__marker span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ff5a2e;
+  box-shadow: 0 0 0 4px rgba(255, 90, 46, 0.25);
+  animation: loft-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes loft-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+.loft__panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: min(280px, 80%);
+  padding: 18px;
+  background: rgba(15, 9, 6, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+}
+
+.loft__panel-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: none;
+  background: none;
+  color: #f5ede4;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.loft__panel-body img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+
+.loft__panel-body h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.loft__panel-price {
+  margin: 0 0 14px;
+  color: #ff8a5b;
+  font: 600 0.85rem/1 "IBM Plex Mono", monospace;
+}
+
+.loft__add-to-cart {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 3px;
+  background: #ff5a2e;
+  color: #0f0906;
+  font: 600 0.75rem/1 "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.loft__add-to-cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loft__view-link {
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+  color: #b9bec6;
+  font: 500 0.72rem/1 "IBM Plex Mono", monospace;
+}
+
+/* Accessible fallback grid — default state; JS hides it when 3D mounts. */
+.loft__fallback-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.loft__fallback-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.loft__fallback-card img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 3px;
+  background: #1c1512;
+}
+
+.loft__fallback-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.loft__fallback-price {
+  color: #ff8a5b;
+  font: 500 0.78rem/1 "IBM Plex Mono", monospace;
+}

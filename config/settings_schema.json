@@ -1,0 +1,18 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Loft Interactive",
+    "theme_version": "0.1.0",
+    "theme_author": "Caleb Pierre",
+    "theme_documentation_url": "https://github.com/ghettoeinstein/pi-shopify",
+    "theme_support_url": "https://calebpierre.com"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      { "type": "color", "id": "color_background", "label": "Background", "default": "#0f0906" },
+      { "type": "color", "id": "color_text", "label": "Text", "default": "#f5ede4" },
+      { "type": "color", "id": "color_accent", "label": "Accent", "default": "#ff5a2e" }
+    ]
+  }
+]
