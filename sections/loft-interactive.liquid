@@ -4,45 +4,48 @@
     assign loft_collection = collections.all
   endif
 %}
-<section id="PILoft-{{ section.id }}" class="pi-loft" data-pi-loft>
-  <canvas class="pi-loft__shader" data-pi-shader aria-hidden="true"></canvas>
-  <div class="pi-loft__chrome" aria-hidden="true"><span>PRIVATE SHOWROOM / 01</span><span>DRAG TO MOVE</span></div>
-  <header class="pi-loft__identity"><p>{{ section.settings.eyebrow }}</p><h1>THE<br><em>LOFT</em></h1></header>
-  <div class="pi-loft__rack" data-pi-rack aria-label="Interactive product rack">
+<section id="PILoft-{{ section.id }}" class="pi-loft" data-pi-loft data-three-url="{{ 'vendor-three.module.js' | asset_url }}">
+  <canvas class="pi-loft__canvas" data-pi-canvas aria-label="Interactive 3D Phillipa Imani showroom"></canvas>
+  <div class="pi-loft__loader" data-pi-loader><span>PHILLIPA IMANI / PRIVATE SHOWROOM</span><i><b data-pi-loadbar></b></i><small data-pi-loadcopy>BUILDING THE LOFT</small></div>
+  <header class="pi-loft__brand"><p>{{ section.settings.eyebrow }}</p><h1>PHILLIPA<br><em>IMANI</em></h1></header>
+  <nav class="pi-loft__zones" aria-label="Showroom camera positions">
+    <button type="button" data-pi-zone="entry" class="is-active"><span>01</span> ENTRY</button>
+    <button type="button" data-pi-zone="lounge"><span>02</span> LOUNGE</button>
+    <button type="button" data-pi-zone="rack"><span>03</span> RACK 01</button>
+    <button type="button" data-pi-zone="window"><span>04</span> RACK 02</button>
+  </nav>
+  <div class="pi-loft__reticle" aria-hidden="true"><i></i></div>
+  <aside class="pi-product-panel" data-pi-panel aria-live="polite">
+    <button class="pi-product-panel__close" type="button" data-pi-close aria-label="Close product">×</button>
+    <span data-pi-product-index>OBJECT 01</span><h2 data-pi-product-title>SELECT A GARMENT</h2><p data-pi-product-price></p>
+    <div class="pi-product-panel__actions"><button type="button" data-pi-add>ADD TO BAG</button><a href="{{ routes.all_products_collection_url }}" data-pi-details>VIEW DETAILS ↗</a></div>
+    <small data-pi-product-status>CLICK A GARMENT IN THE ROOM</small>
+  </aside>
+  <div class="pi-loft__hud"><span class="pi-loft__help"><b>DRAG</b> LOOK AROUND &nbsp;·&nbsp; <b>SCROLL</b> MOVE &nbsp;·&nbsp; <b>CLICK</b> INSPECT</span><span class="pi-loft__mobile-help"><b>SWIPE</b> LOOK &nbsp;·&nbsp; <b>TAP</b> INSPECT</span><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">SHOP AS GRID ↗</a></div>
+  <div class="pi-loft__products" data-pi-products hidden>
     {% assign shown = 0 %}
     {% for product in loft_collection.products %}
       {% unless product.handle contains 'asset-pack' %}
         {% assign shown = shown | plus: 1 %}
-        <a class="pi-garment" href="{{ product.url }}" data-pi-garment data-title="{{ product.title | escape }}" data-price="{{ product.price | money | escape }}">
-          <span class="pi-garment__hanger" aria-hidden="true"></span>
-          {% if product.featured_image %}
-            {{ product.featured_image | image_url: width: 1000 | image_tag: class: 'pi-garment__image', loading: 'eager', widths: '360, 540, 720, 1000', alt: product.title }}
-          {% else %}
-            {{ 'product-1' | placeholder_svg_tag: 'pi-garment__image' }}
-          {% endif %}
-          <span class="pi-garment__caption"><b>0{{ shown }}</b><strong>{{ product.title }}</strong><small>{{ product.price | money }}</small></span>
-        </a>
+        <article data-pi-product data-title="{{ product.title | escape }}" data-price="{{ product.price | money | escape }}" data-url="{{ product.url }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}" data-available="{{ product.available }}" {% if product.featured_image %}data-image="{{ product.featured_image | image_url: width: 1000 }}"{% endif %}><a href="{{ product.url }}">{{ product.title }}</a></article>
         {% if shown == section.settings.product_limit %}{% break %}{% endif %}
       {% endunless %}
     {% endfor %}
   </div>
-  <aside class="pi-loft__focus" data-pi-focus aria-live="polite">
-    <span data-pi-count>01 / 04</span><h2 data-pi-title>SELECT A GARMENT</h2><p data-pi-price></p><b>HOLD TO ENTER</b><i data-pi-progress></i>
-  </aside>
-  <div class="pi-loft__instructions"><span class="pi-loft__desktop-help">DRAG THE ROOM · TAP TO FOCUS · HOLD TO ENTER</span><span class="pi-loft__mobile-help">SWIPE THE RACK · TAP TO FOCUS · TAP AGAIN TO ENTER</span></div>
-  <a class="pi-loft__grid-link" href="{{ loft_collection.url | default: routes.all_products_collection_url }}">VIEW AS GRID ↗</a>
-  <noscript><p class="pi-loft__noscript"><a href="{{ loft_collection.url }}">Shop the collection.</a></p></noscript>
+  <div class="pi-loft__fallback" data-pi-fallback><p>THE SHOWROOM COULD NOT LOAD ON THIS DEVICE.</p><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">ENTER THE SHOP ↗</a></div>
+  <noscript><p class="pi-loft__noscript"><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">Shop the collection.</a></p></noscript>
 </section>
 {{ 'loft-scene.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'loft-scene.js' | asset_url }}" defer></script>
+<script src="{{ 'vendor-gsap.min.js' | asset_url }}" defer></script>
+<script type="module" src="{{ 'loft-scene.js' | asset_url }}"></script>
 {% schema %}
 {
-  "name": "PI New York Loft",
+  "name": "PI 3D New York Loft",
   "settings": [
     { "type": "collection", "id": "collection", "label": "Collection" },
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "MADE IN SOUTH CENTRAL / LOS ANGELES" },
-    { "type": "range", "id": "product_limit", "label": "Garments on rack", "min": 2, "max": 6, "step": 1, "default": 4 }
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SOUTH CENTRAL / LOS ANGELES" },
+    { "type": "range", "id": "product_limit", "label": "Garments in showroom", "min": 2, "max": 8, "step": 1, "default": 6 }
   ],
-  "presets": [{ "name": "PI New York Loft" }]
+  "presets": [{ "name": "PI 3D New York Loft" }]
 }
 {% endschema %}
