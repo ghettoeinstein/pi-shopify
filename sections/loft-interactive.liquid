@@ -1,128 +1,51 @@
-<section
-  class="loft"
-  id="Loft-{{ section.id }}"
-  data-loft
-  data-section-id="{{ section.id }}"
->
-  <div class="loft__intro">
-    {% if section.settings.eyebrow != blank %}
-      <p class="loft__eyebrow">{{ section.settings.eyebrow }}</p>
-    {% endif %}
-    {% if section.settings.heading != blank %}
-      <h2 class="loft__heading">{{ section.settings.heading }}</h2>
-    {% endif %}
+{% liquid
+  assign loft_collection = collections[section.settings.collection]
+  if loft_collection == blank
+    assign loft_collection = collections.all
+  endif
+%}
+<section id="PILoft-{{ section.id }}" class="pi-loft" data-pi-loft data-three-url="{{ 'vendor-three.module.js' | asset_url }}">
+  <canvas class="pi-loft__canvas" data-pi-canvas aria-label="Interactive 3D Phillipa Imani showroom"></canvas>
+  <div class="pi-loft__loader" data-pi-loader><span>PHILLIPA IMANI / PRIVATE SHOWROOM</span><i><b data-pi-loadbar></b></i><small data-pi-loadcopy>BUILDING THE LOFT</small></div>
+  <header class="pi-loft__brand"><p>{{ section.settings.eyebrow }}</p><h1>PHILLIPA<br><em>IMANI</em></h1></header>
+  <nav class="pi-loft__zones" aria-label="Showroom camera positions">
+    <button type="button" data-pi-zone="entry" class="is-active"><span>01</span> ENTRY</button>
+    <button type="button" data-pi-zone="lounge"><span>02</span> LOUNGE</button>
+    <button type="button" data-pi-zone="rack"><span>03</span> RACK 01</button>
+    <button type="button" data-pi-zone="window"><span>04</span> RACK 02</button>
+  </nav>
+  <div class="pi-loft__reticle" aria-hidden="true"><i></i></div>
+  <aside class="pi-product-panel" data-pi-panel aria-live="polite">
+    <button class="pi-product-panel__close" type="button" data-pi-close aria-label="Close product">×</button>
+    <span data-pi-product-index>OBJECT 01</span><h2 data-pi-product-title>SELECT A GARMENT</h2><p data-pi-product-price></p>
+    <div class="pi-product-panel__actions"><button type="button" data-pi-add>ADD TO BAG</button><a href="{{ routes.all_products_collection_url }}" data-pi-details>VIEW DETAILS ↗</a></div>
+    <small data-pi-product-status>CLICK A GARMENT IN THE ROOM</small>
+  </aside>
+  <div class="pi-loft__hud"><span class="pi-loft__help"><b>DRAG</b> LOOK AROUND &nbsp;·&nbsp; <b>SCROLL</b> MOVE &nbsp;·&nbsp; <b>CLICK</b> INSPECT</span><span class="pi-loft__mobile-help"><b>SWIPE</b> LOOK &nbsp;·&nbsp; <b>TAP</b> INSPECT</span><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">SHOP AS GRID ↗</a></div>
+  <div class="pi-loft__products" data-pi-products hidden>
+    {% assign shown = 0 %}
+    {% for product in loft_collection.products %}
+      {% unless product.handle contains 'asset-pack' %}
+        {% assign shown = shown | plus: 1 %}
+        <article data-pi-product data-title="{{ product.title | escape }}" data-price="{{ product.price | money | escape }}" data-url="{{ product.url }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}" data-available="{{ product.available }}" {% if product.featured_image %}data-image="{{ product.featured_image | image_url: width: 1000 }}"{% endif %}><a href="{{ product.url }}">{{ product.title }}</a></article>
+        {% if shown == section.settings.product_limit %}{% break %}{% endif %}
+      {% endunless %}
+    {% endfor %}
   </div>
-
-  {% comment %} 3D mount point — JS replaces/hides the fallback grid below when WebGL + viewport allow it. {% endcomment %}
-  <div class="loft__stage" data-loft-stage aria-hidden="true">
-    <canvas data-loft-canvas></canvas>
-    <div class="loft__panel" data-loft-panel hidden>
-      <button type="button" class="loft__panel-close" data-loft-panel-close aria-label="Close">&times;</button>
-      <div class="loft__panel-body" data-loft-panel-body></div>
-    </div>
-    <p class="loft__hint">Drag to look around &middot; click a piece to shop it</p>
-  </div>
-
-  {% comment %} Accessible fallback — always rendered, real Liquid product data, works with JS off. {% endcomment %}
-  <div class="loft__fallback" data-loft-fallback>
-    <div class="loft__fallback-grid">
-      {% for block in section.blocks %}
-        {% assign product = block.settings.product %}
-        {% if product != blank %}
-          <a class="loft__fallback-card" href="{{ product.url }}" {{ block.shopify_attributes }}>
-            {% if product.featured_image %}
-              <img
-                src="{{ product.featured_image | image_url: width: 480 }}"
-                alt="{{ product.featured_image.alt | escape }}"
-                loading="lazy"
-                width="480"
-                height="{{ 480 | divided_by: product.featured_image.aspect_ratio }}"
-              >
-            {% endif %}
-            <span class="loft__fallback-title">{{ block.settings.label | default: product.title }}</span>
-            <span class="loft__fallback-price">{{ product.price | money }}</span>
-          </a>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-
-  {% comment %} Hotspot data for loft-scene.js — public product fields only. {% endcomment %}
-  {{ 'loft-scene.css' | asset_url | stylesheet_tag }}
-  <script type="application/json" data-loft-hotspots>
-    [
-      {% for block in section.blocks %}
-        {% assign product = block.settings.product %}
-        {% if product != blank %}
-          {
-            "id": {{ block.id | json }},
-            "spot": {{ block.settings.spot | json }},
-            "label": {{ block.settings.label | default: product.title | json }},
-            "title": {{ product.title | json }},
-            "price": {{ product.price | money | json }},
-            "image": {{ product.featured_image | image_url: width: 800 | json }},
-            "url": {{ product.url | json }},
-            "variantId": {{ product.selected_or_first_available_variant.id | json }},
-            "available": {{ product.available | json }}
-          }{% unless forloop.last %},{% endunless %}
-        {% endif %}
-      {% endfor %}
-    ]
-  </script>
-
-  <script type="module" src="{{ 'loft-scene.js' | asset_url }}" defer></script>
+  <div class="pi-loft__fallback" data-pi-fallback><p>THE SHOWROOM COULD NOT LOAD ON THIS DEVICE.</p><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">ENTER THE SHOP ↗</a></div>
+  <noscript><p class="pi-loft__noscript"><a href="{{ loft_collection.url | default: routes.all_products_collection_url }}">Shop the collection.</a></p></noscript>
 </section>
-
+{{ 'loft-scene.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'vendor-gsap.min.js' | asset_url }}" defer></script>
+<script type="module" src="{{ 'loft-scene.js' | asset_url }}"></script>
 {% schema %}
 {
-  "name": "Loft Interactive",
+  "name": "PI 3D New York Loft",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "INTERACTIVE" },
-    { "type": "text", "id": "heading", "label": "Heading", "default": "Step into the loft." },
-    {
-      "type": "select",
-      "id": "quality",
-      "label": "Rendering quality",
-      "options": [
-        { "value": "auto", "label": "Auto (recommended)" },
-        { "value": "high", "label": "Always high" },
-        { "value": "low", "label": "Always low-power" }
-      ],
-      "default": "auto"
-    }
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "SOUTH CENTRAL / LOS ANGELES" },
+    { "type": "range", "id": "product_limit", "label": "Garments in showroom", "min": 2, "max": 8, "step": 1, "default": 6 }
   ],
-  "blocks": [
-    {
-      "type": "hotspot",
-      "name": "Hotspot",
-      "settings": [
-        { "type": "product", "id": "product", "label": "Product" },
-        {
-          "type": "select",
-          "id": "spot",
-          "label": "Placement in the room",
-          "options": [
-            { "value": "sofa", "label": "Sofa" },
-            { "value": "shelf", "label": "Shelf" },
-            { "value": "table", "label": "Table" },
-            { "value": "rack", "label": "Clothing rack" },
-            { "value": "plant", "label": "Plant corner" }
-          ],
-          "default": "sofa"
-        },
-        { "type": "text", "id": "label", "label": "Label override (optional)" }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Loft Interactive",
-      "blocks": [
-        { "type": "hotspot", "settings": { "spot": "sofa" } },
-        { "type": "hotspot", "settings": { "spot": "shelf" } },
-        { "type": "hotspot", "settings": { "spot": "rack" } }
-      ]
-    }
-  ]
+  "presets": [{ "name": "PI 3D New York Loft" }]
 }
 {% endschema %}

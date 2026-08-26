@@ -1,7 +1,7 @@
 <div class="product-page" style="max-width:1200px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1fr 1fr;gap:40px;">
   <div>
     {% if product.featured_image %}
-      <img src="{{ product.featured_image | image_url: width: 900 }}" alt="{{ product.featured_image.alt | escape }}" style="width:100%;border-radius:4px;">
+      <img src="{{ product.featured_image | image_url: width: 900 }}" alt="{{ product.featured_image.alt | escape }}" width="900" height="{{ 900 | divided_by: product.featured_image.aspect_ratio | round }}" style="width:100%;height:auto;border-radius:4px;">
     {% endif %}
   </div>
   <div>
